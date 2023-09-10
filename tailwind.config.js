@@ -7,10 +7,8 @@ module.exports = {
   ],
   theme: {
     extend: {
-      colors: {
-        slate: {
-          // 200: "#141E33",
-        },
+      fontSize: {
+        xs: "0.6rem",
       },
       screens: {
         desktop: "1024px",

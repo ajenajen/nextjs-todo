@@ -3,9 +3,7 @@
 Implement by:
 
 - Next.js
-- Redux toolkit
 - Tailwind Css
-- NextAuth
 
 ## Getting Started
 
