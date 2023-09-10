@@ -1,51 +1,40 @@
-import { useCallback } from "react";
-
-export default function TodoItem({ data, setTodos }) {
+export default function TodoItem({ data, handleEditTodo, handleUpdateStatus }) {
   const bgColor =
     data.status === "done"
       ? "bg-green-600"
       : data.priority === "high"
       ? "bg-orange-600"
-      : "bg-sky-500";
+      : data.priority === "normal"
+      ? "bg-sky-500"
+      : "bg-yellow-600";
   const bgColorHover =
     data.status === "done"
       ? "hover:bg-green-500"
       : data.priority === "high"
       ? "hover:bg-orange-500"
-      : "hover:bg-sky-400";
-
-  const handleUpdateStatus = useCallback(
-    (data) => {
-      setTodos((prev) =>
-        prev.map((item) =>
-          item.id === data.id
-            ? { ...data, status: data.status !== "done" ? "done" : "todo" }
-            : item
-        )
-      );
-    },
-    [setTodos]
-  );
+      : data.priority === "normal"
+      ? "hover:bg-sky-400"
+      : "hover:bg-yellow-500";
 
   return (
     <div
       className={`block w-full text-white my-6 p-4 rounded-lg drop-shadow-lg cursor-pointer ${bgColor} ${bgColorHover} transition-all`}
       id={data.id}
-      onClick={() => handleUpdateStatus(data)}
     >
       <div className="text-xs font-medium">
         {data.status === "done"
           ? "DONE"
-          : data.priority === "high"
-          ? "HIGH PRIORITY"
-          : "NORMAL PRIORITY"}
+          : `${data.priority.toUpperCase()} PRIORITY`}
       </div>
       <div className="flex items-center justify-between">
-        <div>
+        <div onClick={() => handleEditTodo(data)}>
           <h2 className="text-xl font-medium my-0.5">{data.title}</h2>
           <p className="text-sm">{data.desc}</p>
         </div>
-        <div className="flex items-center relative">
+        <div
+          className="flex items-center relative z-100"
+          onClick={() => handleUpdateStatus(data)}
+        >
           <input
             type="checkbox"
             checked={data.status === "done"}

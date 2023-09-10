@@ -20,7 +20,7 @@ export default function Select({
           <select
             name={name}
             id={name}
-            value={options.find((option) => option.value === value)}
+            value={value}
             autoComplete={name}
             className="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-0 w-full"
             onChange={handleChangeValue}

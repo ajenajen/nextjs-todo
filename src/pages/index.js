@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import ButtonNew from "@/components/ButtonNew";
 import HeaderDate from "@/components/HeaderDate";
 import FlexBox from "@/components/FlexBox";
@@ -9,11 +9,35 @@ import ModalForm from "@/components/ModalForm";
 
 export default function Home() {
   const [open, setOpen] = useState(false);
-  const [todos, setTodos] = useState(initTodo);
+  const [todos, setTodos] = useState(initTodos);
+  const [todo, setTodo] = useState(initTodo);
 
-  const handleAddTodo = (todo) => {
-    setTodos([{ id: todos?.length + 1, ...todo }, ...todos]);
+  const handleUpdateTodo = (value) => {
+    if (!!value?.id) {
+      const restTodos = todos.filter((item) => item.id !== value.id);
+      setTodos([...restTodos, value]);
+    } else {
+      setTodos([{ id: todos?.length + 1, ...value }, ...todos]);
+    }
   };
+
+  const handleEditTodo = useCallback((value) => {
+    setOpen(true);
+    setTodo(value);
+  }, []);
+
+  const handleUpdateStatus = useCallback(
+    (data) => {
+      setTodos((prev) =>
+        prev.map((item) =>
+          item.id === data.id
+            ? { ...data, status: data.status !== "done" ? "done" : "todo" }
+            : item
+        )
+      );
+    },
+    [setTodos]
+  );
 
   return (
     <main
@@ -30,11 +54,13 @@ export default function Home() {
         <TodoList>
           {todos
             ?.filter((item) => item.status !== "done")
+            ?.sort((a, b) => a.id - b.id)
             ?.map((item) => (
               <TodoItem
                 key={`todo-${item.id}`}
                 data={item}
-                setTodos={setTodos}
+                handleEditTodo={handleEditTodo}
+                handleUpdateStatus={handleUpdateStatus}
               />
             ))}
         </TodoList>
@@ -44,44 +70,58 @@ export default function Home() {
         <TodoList>
           {todos
             ?.filter((item) => item.status === "done")
+            ?.sort((a, b) => a.id - b.id)
             ?.map((item) => (
               <TodoItem
                 key={`todo-${item.id}`}
                 data={item}
-                setTodos={setTodos}
+                handleEditTodo={handleEditTodo}
+                handleUpdateStatus={handleUpdateStatus}
               />
             ))}
         </TodoList>
       </FlexBox>
-      <ModalForm open={open} setOpen={setOpen} handleAddTodo={handleAddTodo} />
+      <ModalForm
+        todo={todo}
+        open={open}
+        setOpen={setOpen}
+        handleUpdateTodo={handleUpdateTodo}
+      />
     </main>
   );
 }
 
-const initTodo = [
+const initTodo = {
+  title: "",
+  desc: "",
+  priority: "normal",
+  status: "todo",
+};
+
+const initTodos = [
   {
-    id: 0,
+    id: 1,
     title: "Buy Present",
     desc: "Go and get Christmas present for Lana and Sandra",
     status: "todo",
     priority: "high",
   },
   {
-    id: 1,
+    id: 2,
     title: "Go to the Store",
     desc: "Egg, bacon, milk, frozen yogurt, sweets",
     status: "todo",
     priority: "high",
   },
   {
-    id: 2,
+    id: 3,
     title: "Go for a walk",
     desc: "Walk a minimum of 3Km today.",
     status: "todo",
     priority: "normal",
   },
   {
-    id: 3,
+    id: 4,
     title: "Call James",
     desc: "Call James for a meeting update",
     status: "done",

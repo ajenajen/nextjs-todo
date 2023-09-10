@@ -1,34 +1,35 @@
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { useFormik } from "formik";
 import InputForm from "./InputForm";
 import Select from "./Select";
 
-export default function ModalForm({ open, setOpen, handleAddTodo }) {
-  const { values, errors, setFieldValue, resetForm, handleSubmit } = useFormik({
-    initialValues: {
-      title: "",
-      desc: "",
-      priority: "normal",
-      status: "todo",
-    },
-    validateOnChange: false,
-    validateOnBlur: false,
-    validate: (values) => {
-      let errors = {};
-      if (!values.title) {
-        errors.title = "This fiedl is required!";
-      }
-      return errors;
-    },
-    onSubmit: (values) => {
-      if (Object.keys(errors)?.length === 0) {
-        handleAddTodo(values);
-        resetForm();
-        setOpen(false);
-      }
-    },
-  });
+export default function ModalForm({ todo, open, setOpen, handleUpdateTodo }) {
+  const { values, errors, setValues, setFieldValue, resetForm, handleSubmit } =
+    useFormik({
+      initialValues: todo,
+      validateOnChange: false,
+      validateOnBlur: false,
+      validate: (values) => {
+        let errors = {};
+        if (!values.title) {
+          errors.title = "This fiedl is required!";
+        }
+        return errors;
+      },
+      onSubmit: (values) => {
+        if (Object.keys(errors)?.length === 0) {
+          handleUpdateTodo(values);
+          resetForm();
+          setOpen(false);
+        }
+      },
+    });
+
+  useEffect(() => {
+    console.log(todo);
+    setValues(todo);
+  }, [todo, setValues]);
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -86,7 +87,7 @@ export default function ModalForm({ open, setOpen, handleAddTodo }) {
                       <Select
                         name="priority"
                         label="Priority"
-                        value={values.desc}
+                        value={values.priority}
                         handleChangeValue={(e) =>
                           setFieldValue("priority", e.target.value)
                         }
@@ -103,9 +104,9 @@ export default function ModalForm({ open, setOpen, handleAddTodo }) {
                   <button
                     type="button"
                     className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 w-32"
-                    onClick={() => handleSubmit()}
+                    onClick={handleSubmit}
                   >
-                    Add
+                    {todo?.id ? "Edit" : "Add"}
                   </button>
                   <button
                     type="button"
